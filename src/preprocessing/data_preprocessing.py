@@ -14,7 +14,6 @@ def standardize_timestamps(df):
 
 
 def handle_outliers_statistical(df):
-    #za elia wind
     wind_cols = ['elia_wind_da_p10', 'elia_wind_da_p90']
 
     for col in wind_cols:
@@ -115,7 +114,6 @@ def main():
         processed_dfs[name] = df_aligned
 
     for name, df in processed_dfs.items():
-        # the folder should be renamed processed(my bad)^^
         output_path = f'../../data/preprocessing/{name.lower().replace(" ", "_")}_processed.csv'
         df.to_csv(output_path)
         print(f"Saved processed file to: {output_path}")

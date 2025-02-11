@@ -1,7 +1,9 @@
-pandas
-numpy
+pandas~=2.2.3
+numpy~=2.2.2
 matplotlib
 seaborn
 scikit-learn
 pytest
 scipy
+plotly
+missingno

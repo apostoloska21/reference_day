@@ -5,12 +5,12 @@ from pathlib import Path
 
 def validate_data_quality(df, feature_type='solar'):
     validation_report = {}
-
+    df = df.apply(pd.to_numeric, errors='coerce')
     neg_counts = (df < 0).sum()
     validation_report['negative_values'] = neg_counts
 
     if feature_type == 'solar':
-        unrealistic = (df > 5000).sum()  # Max solar capacity in Belgium - fix this
+        unrealistic = (df > 9000).sum()
         validation_report['unrealistic_values'] = unrealistic
 
     time_gaps = df.index.to_series().diff().value_counts()
@@ -24,10 +24,8 @@ def validate_data_quality(df, feature_type='solar'):
 
 
 def main():
-    # Path to your processed data
     data_dir = Path('../../data/preprocessing')
 
-    # List of your processed files
     processed_files = [
         'ecmwf_solar_data_processed.csv',
         'elia_solar_data_processed.csv',
