@@ -1,9 +1,6 @@
 import pandas as pd
 
-import config
 import config_processed
-import numpy as np
-from datetime import datetime
 import logging
 
 logging.basicConfig(level=logging.INFO)
