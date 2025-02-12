@@ -38,7 +38,7 @@ def check_datetime_column(df, dataset_name, datetime_col="dtutc"):
         print(f"\n{dataset_name} does not contain '{datetime_col}' column or failed to load.")
 
 
-# Usage example:
+
 def main():
     datasets = {
         "meteo_da_price": config.METEO_DA_PRICE,

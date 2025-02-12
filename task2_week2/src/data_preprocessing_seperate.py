@@ -7,15 +7,12 @@ import config
 def handle_missing_values(df: pd.DataFrame, dataset_name: str) -> pd.DataFrame:
     print(f"\nHandling missing values for {dataset_name}")
 
-    # Copy to avoid warnings
     df = df.copy()
 
-    # Show initial missing values
     missing_before = df.isnull().sum()
     print("\nMissing values before handling:")
     print(missing_before)
 
-    # Handle based on dataset type
     if 'solar' in dataset_name.lower():
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
@@ -34,7 +31,6 @@ def handle_missing_values(df: pd.DataFrame, dataset_name: str) -> pd.DataFrame:
             df[col] = df[col].interpolate(method='polynomial', order=2)
             df[col] = df[col].ffill().bfill()
 
-    # Show final missing values
     missing_after = df.isnull().sum()
     print("\nMissing values after handling:")
     print(missing_after)
