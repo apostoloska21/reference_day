@@ -36,26 +36,25 @@ def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
         raise
 
 
-# need to look into this more ---
 def align_datasets(datasets: dict) -> pd.DataFrame:
     try:
 
         start_date = pd.Timestamp('2024-06-01', tz='UTC')
         end_date = pd.Timestamp('2024-10-31', tz='UTC')
-        lookback_days = 60
 
         aligned_dfs = []
         for name, df in datasets.items():
-            full_start = start_date - pd.Timedelta(days=lookback_days)
 
-            mask = (df.index >= full_start) & (df.index <= end_date)
+            mask = (df.index >= start_date) & (df.index <= end_date)
             filtered_df = df[mask]
+
 
             filtered_df = filtered_df.add_prefix(f'{name}_')
             aligned_dfs.append(filtered_df)
 
         combined_df = pd.concat(aligned_dfs, axis=1)
         return combined_df
+
     except Exception as e:
         print(f"Error in alignment: {str(e)}")
         raise
@@ -90,7 +89,7 @@ def main():
         for name in datasets:
             datasets[name] = preprocess_dataset(datasets[name])
         aligned_data = align_datasets(datasets)
-        save_preprocessed_data(aligned_data, "aligned_processed_data.csv")
+        save_preprocessed_data(aligned_data, "processed_data.csv")
     except Exception as e:
         print(f"Error in main processing: {str(e)}")
         raise
