@@ -29,7 +29,10 @@ def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df_hourly = df.resample('h').mean()
         df_hourly = df_hourly.interpolate(method='polynomial', order=2)
+        df_hourly = df_hourly.drop(columns=['solar_fc_neso_mw'], errors='ignore')
+        df_hourly = df_hourly.drop(columns=['wind_fc_neso_mw'], errors='ignore')
         return df_hourly
+
 
     except Exception as e:
         print(f"Error in preprocessing: {str(e)}")
@@ -39,8 +42,8 @@ def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
 def align_datasets(datasets: dict) -> pd.DataFrame:
     try:
 
-        start_date = pd.Timestamp('2024-06-01', tz='UTC')
-        end_date = pd.Timestamp('2024-10-31', tz='UTC')
+        start_date = pd.Timestamp('2024-06-01', tz='CET')
+        end_date = pd.Timestamp('2024-10-31', tz='CET')
 
         aligned_dfs = []
         for name, df in datasets.items():

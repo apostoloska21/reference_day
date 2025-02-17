@@ -21,14 +21,14 @@ def calculate_daily_metrics(df: pd.DataFrame) -> pd.DataFrame:
             ('spread', lambda x: x.max() - x.min()),
             ('std', 'std')
         ],
-        'wind_wind_fc_neso_mw': [
+        'solar_solar_fc_meteo_mw': [
             ('mean', 'mean'),
             ('max', 'max'),
             ('min', 'min'),
             ('spread', lambda x: x.max() - x.min()),
             ('std', 'std')
         ],
-        'solar_solar_fc_neso_mw': [
+        'wind_wind_fc_meteo_mw': [
             ('mean', 'mean'),
             ('max', 'max'),
             ('min', 'min'),
