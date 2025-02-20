@@ -13,7 +13,7 @@ def load_dataset(file_path: str) -> pd.DataFrame:
         if not df['dtutc'].dt.tz:
             df['dtutc'] = df['dtutc'].dt.tz_localize('UTC')
 
-        df['dtcet'] = df['dtutc'].dt.tz_convert('Europe/Paris')
+        df['dtcet'] = df['dtutc'].dt.tz_convert('Europe/Brussels')
 
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         df = df[['dtcet'] + list(numeric_cols)]
@@ -24,6 +24,7 @@ def load_dataset(file_path: str) -> pd.DataFrame:
     except Exception as e:
         print(f"Error loading {file_path}: {str(e)}")
         raise
+
 
 def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
     try:
@@ -47,10 +48,8 @@ def align_datasets(datasets: dict) -> pd.DataFrame:
 
         aligned_dfs = []
         for name, df in datasets.items():
-
             mask = (df.index >= start_date) & (df.index <= end_date)
             filtered_df = df[mask]
-
 
             filtered_df = filtered_df.add_prefix(f'{name}_')
             aligned_dfs.append(filtered_df)

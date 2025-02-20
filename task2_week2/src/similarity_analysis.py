@@ -31,6 +31,7 @@ def find_reference_days(df, lookback=60, top_n=1):
     return pd.DataFrame(results)
 
 
+
 reference_df = find_reference_days(df, lookback=60, top_n=5)
 reference_df.to_csv('../src/data/processed/reference_days.csv', index=False)
 
