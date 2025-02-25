@@ -19,8 +19,11 @@ def calculate_daily_metrics(df: pd.DataFrame) -> pd.DataFrame:
             ('max', 'max'),
             ('min', 'min'),
             ('spread', lambda x: x.max() - x.min()),
-            ('std', 'std')
-        ],
+            ('std', 'std'),
+            ('rolling_std_7d', lambda x: x.rolling(7).std().iloc[-1]),
+            ('price_range', lambda x: x.max() - x.min()),
+            ('cv', lambda x: (x.std() / x.mean()) if x.mean() != 0 else 0),
+             ],
         'solar_solar_fc_meteo_mw': [
             ('mean', 'mean'),
             ('max', 'max'),
@@ -37,9 +40,15 @@ def calculate_daily_metrics(df: pd.DataFrame) -> pd.DataFrame:
         ]
     })
 
-
     daily_metrics.columns = [f"{col[0]}_{col[1]}" for col in daily_metrics.columns]
 
+    daily_metrics['price_intraday_volatility'] = df[
+        'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)'].resample('H').std().groupby(
+        df.index.date).mean()
+
+    daily_metrics['day_of_week'] = pd.to_datetime(daily_metrics.index).dayofweek  # Monday=0, Sunday=6
+    daily_metrics['is_weekend'] = (daily_metrics['day_of_week'] >= 5).astype(int)  # Binary feature for weekends
+    daily_metrics['month'] = pd.to_datetime(daily_metrics.index).month
     return daily_metrics
 
 
