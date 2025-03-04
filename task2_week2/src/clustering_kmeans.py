@@ -38,7 +38,7 @@ n_clusters = 10
 if len(X_scaled) < n_clusters:
     n_clusters = len(X_scaled)
 
-kmeans = KMeans(n_clusters=n_clusters, init="random", random_state=42, n_init="auto")
+kmeans = KMeans(n_clusters=n_clusters, init="k-means++", random_state=42, n_init="auto")
 daily_metrics['cluster'] = kmeans.fit_predict(X_scaled)
 
 print("Clustered Daily Metrics:")

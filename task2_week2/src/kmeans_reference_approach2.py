@@ -11,8 +11,6 @@ delivery_dates = np.unique(da_actuals['date'])
 
 
 def find_reference_day(target_date, lookback=60):
-
-
     if not isinstance(target_date, pd.Timestamp):
         target_date = pd.Timestamp(target_date)
 
@@ -22,7 +20,6 @@ def find_reference_day(target_date, lookback=60):
 
     target_cluster = target_info['cluster'].values[0]
 
-
     past_days = daily_metrics[
         (daily_metrics['date'] < target_date) &
         (daily_metrics['date'] >= target_date - pd.Timedelta(days=lookback))
@@ -31,13 +28,10 @@ def find_reference_day(target_date, lookback=60):
     if past_days.empty:
         return None
 
-
     same_cluster_days = past_days[past_days['cluster'] == target_cluster]
 
     if same_cluster_days.empty:
-
         return past_days.iloc[-1]['date'].date()
-
 
     return same_cluster_days.iloc[-1]['date'].date()
 
@@ -64,6 +58,5 @@ reference_df = pd.DataFrame(list(reference_mapping.items()), columns=['delivery_
 reference_df.to_csv('../src/data/processed/kmeans_reference_mapping_approach2.csv', index=False)
 
 print(f"Reference day mapping saved to '../src/data/processed/kmeans_reference_mapping_approach2.csv'")
-
 
 print(f"Total delivery dates mapped: {len(reference_mapping)}")
