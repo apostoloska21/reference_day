@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.distance import euclidean, cosine
 from scipy.stats import pearsonr
-
+from similarity_metrics import *
 
 def prepare_vectors(current_day, past_day):
     numeric_cols = current_day.index[current_day.apply(np.isreal)]
