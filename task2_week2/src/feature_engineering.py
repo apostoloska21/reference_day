@@ -43,12 +43,14 @@ def calculate_daily_metrics(df: pd.DataFrame) -> pd.DataFrame:
     daily_metrics.columns = [f"{col[0]}_{col[1]}" for col in daily_metrics.columns]
 
     daily_metrics['price_intraday_volatility'] = df[
-        'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)'].resample('H').std().groupby(
+        'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)'].resample('h').std().groupby(
         df.index.date).mean()
+
 
     daily_metrics['day_of_week'] = pd.to_datetime(daily_metrics.index).dayofweek  # Monday=0, Sunday=6
     daily_metrics['is_weekend'] = (daily_metrics['day_of_week'] >= 5).astype(int)  # Binary feature for weekends
     daily_metrics['month'] = pd.to_datetime(daily_metrics.index).month
+
     return daily_metrics
 
 
