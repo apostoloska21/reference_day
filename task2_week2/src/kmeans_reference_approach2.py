@@ -29,7 +29,7 @@ def find_reference_day(target_date, lookback=60):
         (daily_metrics['date'] < target_date) &
         # dates withing the past 60 days
         (daily_metrics['date'] >= target_date - pd.Timedelta(days=lookback)) &
-        # print with the same weekend status
+        # print with the same weekend stattus
         (daily_metrics['is_weekend'] == target_status)
         ]
 

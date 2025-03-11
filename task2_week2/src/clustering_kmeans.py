@@ -46,8 +46,6 @@ for n_clusters in cluster_range:
     num_clusters.append(kmeans.inertia_)
     daily_metrics['cluster'] = kmeans.fit_predict(X_scaled)
 
-
-
 print(daily_metrics['cluster'].value_counts())
 print("Clustered Daily Metrics:")
 print(daily_metrics[['date', 'cluster']].head())
