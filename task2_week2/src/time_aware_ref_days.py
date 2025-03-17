@@ -16,10 +16,10 @@ def find_optimal_clusters(X, min_clusters, max_clusters):
         kmeans = KMeans(n_clusters=n_clusters, init="k-means++", random_state=45, n_init=10)
         kmeans.fit(X)
         inertia.append(kmeans.inertia_)
-
+        print("stored inertia for each cluster")
     if len(inertia) <= 1:
         return min_clusters
-
+    #  rate of change in inertia
     inertia_diffs = np.diff(inertia)
 
     if len(inertia_diffs) <= 1:
@@ -28,7 +28,7 @@ def find_optimal_clusters(X, min_clusters, max_clusters):
         return min_clusters + 1
 
     inertia_diffs_rate = np.diff(inertia_diffs)
-
+    # ovde -> best cluster count where the rate of decrease slows down.
     if len(inertia_diffs_rate) > 0:
         elbow_idx = np.argmax(inertia_diffs_rate) + min_clusters + 1
 
@@ -79,13 +79,11 @@ def find_reference_days(daily_metrics_file, delivery_dates, lookback=60, min_clu
             continue
 
         X = historical_data[features].values
-
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 
         n_samples = len(historical_data)
         if n_samples < 3 * min_clusters:
-
             n_clusters = min(2, n_samples)
         else:
 
@@ -164,7 +162,6 @@ def assign_time_aware_clusters(daily_metrics_df, lookback=60):
 
         if i < lookback:
             continue
-
         historical_data, _, kmeans, _ = recreate_clusters_for_date(
             date, daily_metrics_df, lookback=lookback, n_clusters=min(5, i // 3))
 
