@@ -4,21 +4,33 @@ from scipy.spatial.distance import euclidean, cosine
 from scipy.stats import pearsonr
 from similarity_metrics import *
 
+
 def prepare_vectors(current_day, past_day):
     numeric_cols = current_day.index[current_day.apply(np.isreal)]
-
     v1 = np.nan_to_num(current_day[numeric_cols].astype(float).values)
     v2 = np.nan_to_num(past_day[numeric_cols].astype(float).values)
-
     return v1, v2
 
 
 def find_reference_days_euclidean(df, lookback=60, top_n=1):
-    results = []
+    df = df.sort_values(by='date')
 
-    for i in range(lookback, len(df)):
-        current_day = df.iloc[i]
-        past_days = df.iloc[i - lookback:i]
+    results = []
+    for i, (_, current_day) in enumerate(df.iterrows()):
+        target_date = current_day['date']
+
+        historical_data = df[df['date'] <= target_date].copy()
+
+        if len(historical_data) <= 1:
+            continue
+
+        start_date = target_date - pd.Timedelta(days=lookback)
+
+        past_days = historical_data[(historical_data['date'] >= start_date) &
+                                    (historical_data['date'] < target_date)]
+
+        if past_days.empty:
+            continue
 
         distances = []
         for _, past_day in past_days.iterrows():
@@ -34,22 +46,34 @@ def find_reference_days_euclidean(df, lookback=60, top_n=1):
             distances.sort(key=lambda x: x[1])
             closest_days = [d[0] for d in distances[:top_n]]
             closest_distance = distances[0][1]
-
             results.append({
-                'date': current_day['date'],
+                'date': target_date,
                 'closest_reference_days': closest_days,
                 'distance': closest_distance
             })
-    __all__ = ['find_reference_days_euclidean']
+
     return pd.DataFrame(results)
 
 
 def find_reference_days_cosine(df, lookback=60, top_n=1):
-    results = []
+    df = df.sort_values(by='date')
 
-    for i in range(lookback, len(df)):
-        current_day = df.iloc[i]
-        past_days = df.iloc[i - lookback:i]
+    results = []
+    for i, (_, current_day) in enumerate(df.iterrows()):
+        target_date = current_day['date']
+
+        historical_data = df[df['date'] <= target_date].copy()
+
+        if len(historical_data) <= 1:
+            continue
+
+        start_date = target_date - pd.Timedelta(days=lookback)
+
+        past_days = historical_data[(historical_data['date'] >= start_date) &
+                                    (historical_data['date'] < target_date)]
+
+        if past_days.empty:
+            continue
 
         distances = []
         for _, past_day in past_days.iterrows():
@@ -68,22 +92,34 @@ def find_reference_days_cosine(df, lookback=60, top_n=1):
             distances.sort(key=lambda x: x[1])
             closest_days = [d[0] for d in distances[:top_n]]
             closest_distance = distances[0][1]
-
             results.append({
-                'date': current_day['date'],
+                'date': target_date,
                 'closest_reference_days': closest_days,
                 'distance': closest_distance
             })
-    __all__ = ['find_reference_days_cosine']
+
     return pd.DataFrame(results)
 
 
 def find_reference_days_correlation(df, lookback=60, top_n=1):
-    results = []
+    df = df.sort_values(by='date')
 
-    for i in range(lookback, len(df)):
-        current_day = df.iloc[i]
-        past_days = df.iloc[i - lookback:i]
+    results = []
+    for i, (_, current_day) in enumerate(df.iterrows()):
+        target_date = current_day['date']
+
+        historical_data = df[df['date'] <= target_date].copy()
+
+        if len(historical_data) <= 1:
+            continue
+
+        start_date = target_date - pd.Timedelta(days=lookback)
+
+        past_days = historical_data[(historical_data['date'] >= start_date) &
+                                    (historical_data['date'] < target_date)]
+
+        if past_days.empty:
+            continue
 
         distances = []
         for _, past_day in past_days.iterrows():
@@ -103,13 +139,12 @@ def find_reference_days_correlation(df, lookback=60, top_n=1):
             distances.sort(key=lambda x: x[1])
             closest_days = [d[0] for d in distances[:top_n]]
             closest_distance = distances[0][1]
-
             results.append({
-                'date': current_day['date'],
+                'date': target_date,
                 'closest_reference_days': closest_days,
                 'distance': closest_distance
             })
-    __all__ = ['find_reference_days_correlation']
+
     return pd.DataFrame(results)
 
 
