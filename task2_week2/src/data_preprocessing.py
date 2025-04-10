@@ -14,12 +14,9 @@ def load_dataset(file_path: str) -> pd.DataFrame:
             df['dtutc'] = df['dtutc'].dt.tz_localize('UTC')
 
         df['dtcet'] = df['dtutc'].dt.tz_convert('Europe/Brussels')
-
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         df = df[['dtcet'] + list(numeric_cols)]
-
         df.set_index('dtcet', inplace=True)
-
         return df
     except Exception as e:
         print(f"Error loading {file_path}: {str(e)}")
@@ -29,12 +26,9 @@ def load_dataset(file_path: str) -> pd.DataFrame:
 def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df_hourly = df.resample('h').mean()
-        df_hourly = df_hourly.interpolate(method='polynomial', order=2)
-        df_hourly = df_hourly.drop(columns=['solar_fc_neso_mw'], errors='ignore')
-        df_hourly = df_hourly.drop(columns=['wind_fc_neso_mw'], errors='ignore')
+        df_hourly = df_hourly.interpolate(method='time')
+        df_hourly = df_hourly.drop(columns=['solar_fc_neso_mw', 'wind_fc_neso_mw'], errors='ignore')
         return df_hourly
-
-
     except Exception as e:
         print(f"Error in preprocessing: {str(e)}")
         raise
@@ -42,21 +36,19 @@ def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
 
 def align_datasets(datasets: dict) -> pd.DataFrame:
     try:
-
-        start_date = pd.Timestamp('2024-06-01', tz='CET')
-        end_date = pd.Timestamp('2024-10-31', tz='CET')
+        # Full year range with buffer for lookback
+        start_date = pd.Timestamp('2024-01-01', tz='CET')
+        end_date = pd.Timestamp('2024-12-31', tz='CET')
 
         aligned_dfs = []
         for name, df in datasets.items():
             mask = (df.index >= start_date) & (df.index <= end_date)
-            filtered_df = df[mask]
-
+            filtered_df = df[mask].copy()
             filtered_df = filtered_df.add_prefix(f'{name}_')
             aligned_dfs.append(filtered_df)
 
-        combined_df = pd.concat(aligned_dfs, axis=1)
+        combined_df = pd.concat(aligned_dfs, axis=1).ffill().bfill()
         return combined_df
-
     except Exception as e:
         print(f"Error in alignment: {str(e)}")
         raise
@@ -73,7 +65,6 @@ def save_preprocessed_data(df: pd.DataFrame, filename: str):
             shutil.copy2(file_path, os.path.join(backup_dir, f"backup_{filename}"))
         df.to_csv(file_path)
         print(f"Saved processed data to {file_path}")
-
     except Exception as e:
         print(f"Error saving data: {str(e)}")
         raise
@@ -81,15 +72,16 @@ def save_preprocessed_data(df: pd.DataFrame, filename: str):
 
 def main():
     try:
-
         datasets = {
             "demand": load_dataset(config.NESO_DEMAND_FORECAST),
             "price": load_dataset(config.METEO_DA_PRICE),
             "wind": load_dataset(config.METEO_NESO_WIND),
             "solar": load_dataset(config.METEO_NESO_SOLAR)
         }
+
         for name in datasets:
             datasets[name] = preprocess_dataset(datasets[name])
+
         aligned_data = align_datasets(datasets)
         save_preprocessed_data(aligned_data, "processed_data.csv")
     except Exception as e:
