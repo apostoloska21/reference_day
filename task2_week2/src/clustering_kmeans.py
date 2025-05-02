@@ -1,9 +1,14 @@
 import os
+
+import features
 import pandas as pd
 import numpy as np
+import scaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+from sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer
 
 daily_metrics_file = '../src/data/processed/daily_metrics.csv'
 daily_metrics = pd.read_csv(daily_metrics_file)
@@ -16,12 +21,33 @@ daily_metrics.sort_values(by='date', inplace=True)
 daily_metrics.reset_index(drop=True, inplace=True)
 
 features = [
-    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_mean',
-    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_std',
     'demand_National Demand Forecast (NDF) - GB (MW)_mean',
+    'demand_National Demand Forecast (NDF) - GB (MW)_max',
+    'demand_National Demand Forecast (NDF) - GB (MW)_min',
+    'demand_National Demand Forecast (NDF) - GB (MW)_spread',
+    'demand_National Demand Forecast (NDF) - GB (MW)_std',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_mean',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_max',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_min',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_spread',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_std',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_rolling_std_7d',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_price_range',
+    'price_Price average forecast ECMWF ENS United Kingdom day-ahead (£/MWh)_cv',
     'solar_solar_fc_meteo_mw_mean',
+    'solar_solar_fc_meteo_mw_max',
+    'solar_solar_fc_meteo_mw_min',
+    'solar_solar_fc_meteo_mw_spread',
+    'solar_solar_fc_meteo_mw_std',
     'wind_wind_fc_meteo_mw_mean',
-    'is_weekend'
+    'wind_wind_fc_meteo_mw_max',
+    'wind_wind_fc_meteo_mw_min',
+    'wind_wind_fc_meteo_mw_spread',
+    'wind_wind_fc_meteo_mw_std',
+    #     'price_intraday_volatility',
+    'day_of_week',
+    'is_weekend',
+    'month'
 ]
 
 missing_cols = [col for col in features if col not in daily_metrics.columns]
@@ -30,7 +56,10 @@ if missing_cols:
 
 X = daily_metrics[features].values
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+# X_scaled = scaler.fit_transform(X)
+imputer = SimpleImputer(strategy='mean')  # Or 'median', 'most_frequent', etc.
+X_imputed = imputer.fit_transform(daily_metrics[features])
+X_scaled = scaler.fit_transform(X_imputed)
 
 # n_clusters = 10
 num_clusters = []
