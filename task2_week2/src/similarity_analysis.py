@@ -149,7 +149,7 @@ def find_reference_days_correlation(df, lookback=60, top_n=1):
 
 
 def main():
-    df = pd.read_csv('../src/data/processed/daily_metrics.csv', parse_dates=['Unnamed: 0'])
+    df = pd.read_csv('../src/data/processed/daily_metrics.csv', parse_dates=['date'])
     df.rename(columns={'Unnamed: 0': 'date'}, inplace=True)
     df = df.sort_values(by='date')
 
