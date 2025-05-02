@@ -92,7 +92,6 @@ def find_reference_days(daily_metrics_file, delivery_dates, lookback=60, min_clu
 
         historical_data[features] = historical_data[features].fillna(historical_data[features].median())
 
-        # Add this right after filling with medians
         if historical_data[features].isnull().any().any():
             print(f"Warning: NaNs remain in historical data for {delivery_date.date()}")
             print(historical_data[features].isnull().sum())
