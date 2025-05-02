@@ -60,11 +60,10 @@ print(f"Total valid delivery dates: {len(valid_delivery_dates)}")
 for del_date in valid_delivery_dates:
     target_date = pd.Timestamp(del_date)
 
-    # Filter daily_metrics up to target_date
     filtered_metrics = original_daily_metrics[original_daily_metrics['date'] <= target_date]
 
-    # Find reference day using only data available up to target_date
     ref_day = find_reference_day(target_date, filtered_metrics, lookback=60)
+
 
     if ref_day is not None:
         reference_mapping[del_date] = ref_day
