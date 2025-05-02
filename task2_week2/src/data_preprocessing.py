@@ -37,7 +37,7 @@ def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
 def align_datasets(datasets: dict) -> pd.DataFrame:
     try:
         # Full year range with buffer for lookback
-        start_date = pd.Timestamp('2024-01-01', tz='CET')
+        start_date = pd.Timestamp('2024-03-01', tz='CET')
         end_date = pd.Timestamp('2024-12-31', tz='CET')
 
         aligned_dfs = []

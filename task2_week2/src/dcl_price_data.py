@@ -105,13 +105,11 @@ def main():
     reference_mapping_file = '../src/data/processed/time_aware_reference_mapping.csv'
     dcl_prices_file = '../src/data/processed/gb_dcl_prices_gbp_per_mw_per_hour.csv'
 
-    # Choose a 3-month period (e.g., July-September 2024)
-    start_month = 7
-    end_month = 9
+    start_month = 2
+    end_month = 12
 
     print(f"Evaluating reference days for months: {start_month} to {end_month} (2024)")
 
-    # Calculate RMSE for the selected period
     results_df = evaluate_reference_days(
         reference_mapping_file,
         dcl_prices_file,
@@ -119,15 +117,12 @@ def main():
         end_month
     )
 
-    # Save results
     output_file = f'../src/data/processed/reference_day_rmse_evaluation_{start_month}_to_{end_month}.csv'
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
 
-    # Visualize results
-    # visualize_rmse_results(results_df, f'Reference Day RMSE Evaluation (Months {start_month}-{end_month})')
 
-    # Optional: Compare with non-time-aware approach
+
     kmeans_mapping_file = '../src/data/processed/kmeans_reference_mapping_approach2.csv'
     print("\nComparing with non-time-aware approach...")
 
